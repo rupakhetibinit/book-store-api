@@ -1,19 +1,23 @@
+import prisma from '../prisma';
 import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import config from '../config/config';
 const auth = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const accessToken = req.headers.authorization?.split(' ')[1];
-		if (!accessToken) {
+		const session_id = req.cookies.session_id;
+		if (!session_id) {
 			return res.status(401).json({
 				data: null,
 				error: { message: 'You are not authenticated' },
 			});
 		}
 
-		const verify = jwt.verify(accessToken, config.jwtAccessSecret);
+		const session = await prisma.session.findUnique({
+			where: {
+				id: session_id,
+			},
+		});
 
-		if (!verify) {
+		if (!session) {
+			res.clearCookie('session_id');
 			return res.status(401).json({
 				data: null,
 				error: { message: 'You are not authenticated' },

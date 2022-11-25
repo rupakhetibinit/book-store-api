@@ -6,6 +6,8 @@ import express, {
 } from 'express';
 import userRoute from './routes/userRoute';
 import bookRoute from './routes/bookRoute';
+import cookieParser from 'cookie-parser';
+import cors, { CorsOptions } from 'cors';
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -33,7 +35,13 @@ const errorResponder = (
 	const status = error.status || 400;
 	response.status(status).send({ data: null, error });
 };
+const corsOptions: CorsOptions = {
+	credentials: true,
+	origin: 'http://localhost:5173',
+};
+app.use(cors(corsOptions));
 
+app.use(cookieParser());
 app.use(express.json());
 
 app.use('/api/auth', userRoute);

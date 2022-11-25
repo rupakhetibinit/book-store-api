@@ -18,4 +18,12 @@ model User {
   name String?
 
   password String
+
+  sessions Session[]
+}
+
+model Session {
+  id     String @id @unique
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
 }
